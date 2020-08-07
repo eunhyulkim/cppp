@@ -64,6 +64,7 @@ namespace {
 			new_param.append("\t\t\tpublic:\n");
 			new_param.append("\t\t\t\t" + name + "() throw ();\n");
 			new_param.append("\t\t\t\t" + name + "(const " + name + "&) throw ();\n");
+			new_param.append("\t\t\t\t" + name + "& operator= (const " + name + "&) throw ();\n");
 			new_param.append("\t\t\t\tvirtual ~" + name + "() throw ();\n");
 			new_param.append("\t\t\t\tvirtual const char* what() const throw ();\n");
 			new_param.append("\t\t};\n");
