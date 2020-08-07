@@ -201,6 +201,20 @@ namespace {
 		return (nullptr);
 	}
 
+	std::string get_initial_value(std::string type)
+	{
+		if (type[type.size() - 1] == '*')
+			return (" = nullptr;");
+		else if (type.find("int") != std::string::npos)
+			return (" = 0;");
+		else if (type.find("bool") != std::string::npos)
+			return (" = false;");
+		else if (type.find("std::string") != std::string::npos)
+			return (".clear();");
+		else
+			return (" = /* declare initial value */");
+	}
+
 	void update_static_variable(std::string& sstring, Vars *vars, std::string name)
 	{
 		std::string find_string = "/* static variable code */\n";
@@ -218,17 +232,7 @@ namespace {
 				new_param.push_back(' ');
 			new_param.append(name + "::");
 			new_param.append(vars[i].name);
-			new_param.append(" = ");
-			if (vars[i].type[vars[i].type.size() - 1] == '*')
-				new_param.append("nullptr;");
-			else if (vars[i].type == "int")
-				new_param.append("0;");
-			else if (vars[i].type == "bool")
-				new_param.append("false;");
-			else if (vars[i].type == "std::string")
-				new_param.append("\"\";");
-			else
-				new_param.append("/* declare initial value */");
+			new_param.append(get_initial_value(vars[i].type));
 			new_param.push_back('\n');
 		}
 
@@ -256,6 +260,35 @@ namespace {
 			if (vars[i].type[vars[i].type.size() - 1] != '*')
 				new_param.push_back(' ');
 			new_param.append(vars[i].name);
+		}
+
+		sstring.replace(idx, find_string.size(), new_param);
+		return ;
+	}
+	
+	void update_constructor_code(std::string& sstring, Vars *vars)
+	{
+		std::string find_string = "/* constructor code */";
+		int idx = sstring.find(find_string);
+		if (idx == -1)
+			return ;
+
+		std::string new_param;
+		int count = 0;
+		for (int i = 0; i < Vars::modifier_count; i++)
+		{
+			if (vars[i].is_static)
+				continue;
+			if (vars[i].is_initialize)
+				continue;
+			if (count != 0)
+				new_param.append("\n\t");
+			count += 1;
+			new_param.append("this->");
+			if (vars[i].has_underline)
+				new_param.push_back('_');
+			new_param.append(vars[i].name);
+			new_param.append(get_initial_value(vars[i].type));
 		}
 
 		sstring.replace(idx, find_string.size(), new_param);
@@ -326,8 +359,69 @@ namespace {
 		sstring.replace(idx, find_string.size(), new_param);
 		return ;
 	}
+	
+	void update_copy_constructor_code(std::string& sstring, Vars *vars)
+	{
+		std::string find_string = "/* copy-constructor code */";
+		int idx = sstring.find(find_string);
+		if (idx == -1)
+			return ;
 
-	void update_overload_operator(std::string& sstring, Vars *modifier_vars, Vars *constructor_vars)
+		std::string new_param;
+		int count = 0;
+		for (int i = 0; i < Vars::modifier_count; i++)
+		{
+			if (vars[i].is_static)
+				continue;
+			if (vars[i].is_initialize)
+				continue;
+			if (count != 0)
+				new_param.append("\n\t");
+			count += 1;
+			new_param.append("this->");
+			if (vars[i].has_underline)
+				new_param.push_back('_');
+			new_param.append(vars[i].name);
+			new_param.append(get_initial_value(vars[i].type));
+		}
+
+		sstring.replace(idx, find_string.size(), new_param);
+		return ;
+	}
+
+	void update_destructor_code(std::string& sstring, Vars *vars)
+	{
+		std::string find_string = "/* destructor code */";
+		int idx = sstring.find(find_string);
+		if (idx == -1)
+			return ;
+
+		std::string new_param;
+		int count = 0;
+		for (int i = 0; i < Vars::modifier_count; i++)
+		{
+			if (vars[i].is_static)
+				continue;
+			if (count != 0)
+				new_param.append("\n\t");
+			count += 1;
+			if (vars[i].type[vars[i].type.size() - 1] == '*')
+				new_param.append("delete ");
+			new_param.append("this->");
+			if (vars[i].has_underline)
+				new_param.push_back('_');
+			new_param.append(vars[i].name);
+			if (vars[i].type[vars[i].type.size() - 1] == '*')
+				new_param.push_back(';');
+			else
+				new_param.append(get_initial_value(vars[i].type));
+		}
+
+		sstring.replace(idx, find_string.size(), new_param);
+		return ;
+	}
+
+	void update_overload_operator(std::string& sstring, Vars *modifier_vars)
 	{
 		std::string find_string = "/* overload= code */";
 		int idx = sstring.find(find_string);
@@ -337,22 +431,18 @@ namespace {
 
 		int count = 0;
 		std::string new_param;
-		for (int i = 0; i < Vars::constructor_count; i++)
+		for (int i = 0; i < Vars::modifier_count; i++)
 		{
+			if (modifier_vars[i].is_static)
+				continue;
 			count += 1;
 			new_param.append("\tthis->");
-			Vars *modifier_var = get_modifier_var(modifier_vars, constructor_vars[i]);
-			if (modifier_var != nullptr)
-			{
-				if (modifier_var->has_underline)
-					new_param.push_back('_');
-				new_param.append(modifier_var->name);
-			}
-			else
-				new_param.append("/* variable_name */");
+			if (modifier_vars[i].has_underline)
+				new_param.push_back('_');
+			new_param.append(modifier_vars[i].name);
 			new_param.append(" = obj.get");
-			new_param.push_back(static_cast<char>(toupper(constructor_vars[i].name[0])));
-			new_param.append(constructor_vars[i].name.substr(1));
+			new_param.push_back(static_cast<char>(toupper(modifier_vars[i].name[0])));
+			new_param.append(modifier_vars[i].name.substr(1));
 			new_param.append("();\n");
 		}
 		if (count == 0)
@@ -399,17 +489,15 @@ namespace {
 		std::istringstream ss(sstring);
 		std::string line;
 
-		if (Vars::modifier_count != 0)
-			update_static_variable(sstring, modifier_vars, name);
-		if (Vars::constructor_count != 0)
-		{
-			update_constructor_parameter(sstring, constructor_vars);
-			update_constructor_initialize_list(sstring, modifier_vars, constructor_vars);
-			update_copy_constructor_initialize_list(sstring, modifier_vars, constructor_vars);
-			update_overload_operator(sstring, modifier_vars, constructor_vars);
-		}
-		if (Vars::modifier_count != 0)
-			update_getter_function_to_source_file(sstring, modifier_vars, name);
+		update_static_variable(sstring, modifier_vars, name);
+		update_constructor_parameter(sstring, constructor_vars);
+		update_constructor_initialize_list(sstring, modifier_vars, constructor_vars);
+		update_constructor_code(sstring, modifier_vars);
+		update_copy_constructor_initialize_list(sstring, modifier_vars, constructor_vars);
+		update_copy_constructor_code(sstring, modifier_vars);
+		update_destructor_code(sstring, modifier_vars);
+		update_overload_operator(sstring, modifier_vars);
+		update_getter_function_to_source_file(sstring, modifier_vars, name);
 		out << sstring;
 	}
 }

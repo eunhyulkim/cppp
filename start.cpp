@@ -117,7 +117,6 @@ namespace {
 		out << ": " << "/* copy-constructor initialize list */" << std::endl;
 		out << "{" << std::endl;
 		out << "\t/* copy-constructor code */" << std::endl;
-		out << "\t*this = copy;" << std::endl;
 		out << "}" << std::endl << std::endl;
 
 		// destructor header
