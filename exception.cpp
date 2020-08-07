@@ -6,9 +6,11 @@ namespace {
 		public:
 			static int count;
 			std::string name;
+			~MyException();
 	};
 
 	int MyException::count = 0;
+	MyException::~MyException() { MyException::count = 0; }
 
 	MyException *get_exception(std::string& hstring)
 	{
@@ -122,6 +124,8 @@ namespace exception {
 			sout << sstring;
 
 			delete[] vars;
+			hout.close();
+			sout.close();
 		}
 		return ;
 	}

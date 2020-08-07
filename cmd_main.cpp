@@ -169,6 +169,8 @@ namespace cmd_main {
 		path = get::path(file_name, CMD_START, PATH_HEADER);
 		std::ofstream hout(path, std::ofstream::trunc);
 		cmd_main::create_header_file(hout, file_name);
+		hout.close();
+		sout.close();
 		return ;
 	}
 }

@@ -66,6 +66,7 @@ namespace {
 		else if (file_type == TYPE_ABSTRACT || file_type == TYPE_CLASS)
 			create_class_header_file(out, file_type, name);
 		input_default_end_in_header(out);
+		out.close();
 	}
 
 /*

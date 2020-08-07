@@ -236,5 +236,6 @@ namespace make {
 		set_run(out);
 		set_clean(out);
 		set_re_and_phony(out);
+		out.close();
 	}
 }

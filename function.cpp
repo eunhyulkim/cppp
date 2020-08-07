@@ -117,6 +117,8 @@ namespace function {
 			sout << sstring;
 
 			delete[] function_lines;
+			hout.close();
+			sout.close();
 		}
 		return ;
 	}
