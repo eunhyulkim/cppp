@@ -93,7 +93,7 @@ namespace {
 			+ "&) throw() { return (*this); }\n");
 			new_param.append(name + "::" + except + "::~" + except + "() throw (){}\n");
 			new_param.append("const char* " + name + "::" + except \
-			+ "::what() const thorw () { return (\"" + except + " error\"); }\n");
+			+ "::what() const throw () { return (\"" + except + " error\"); }\n");
 		}
 
 		new_param.push_back('\n');

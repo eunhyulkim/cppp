@@ -6,12 +6,10 @@ namespace {
 		std::istringstream ss(hstring);
 		std::ofstream dummy;
 		std::string line;
-
 		if (hstring.find("/* declare member function */") != std::string::npos)
 			get::sstream_with_target(ss, line, "/* declare member function */", dummy, false);
 		else
 			return (nullptr);
-
 		std::string *function_lines = new std::string[20];
 		while (std::getline(ss, line))
 		{
