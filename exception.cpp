@@ -85,9 +85,9 @@ namespace {
 			std::string except = vars[i].name;
 			if (i > 0)
 				new_param.push_back('\n');
-			new_param.append(name + "::" + except + "::" + except + "() throw (){}\n");
+			new_param.append(name + "::" + except + "::" + except + "() throw () : std::exception(){}\n");
 			new_param.append(name + "::" + except + "::" + except + "(const " \
-			+ except + "&) throw (){}\n");
+			+ except + "&) throw () : std::exception(){}\n");
 			new_param.append(name + "::" + except + "& " + name + "::" + except \
 			+ "::operator=(const " + name + "::" + except \
 			+ "&) throw() { return (*this); }\n");
