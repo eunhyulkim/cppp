@@ -7,9 +7,7 @@ namespace {
 		std::ofstream dummy;
 		std::string line;
 		
-		if (hstring.find("/* inherit overload function */") != std::string::npos)
-			get::sstream_with_target(ss, line, "/* inherit overload function */", dummy, false);
-		else if (hstring.find("/* declare member function */") != std::string::npos)
+		if (hstring.find("/* declare member function */") != std::string::npos)
 			get::sstream_with_target(ss, line, "/* declare member function */", dummy, false);
 		else
 			return (nullptr);

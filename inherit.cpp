@@ -50,7 +50,7 @@ namespace {
 				int lidx = bline.find(" = ");
 				out << "\t\t";
 				out << bline.substr(idx + 8, lidx - idx - 8);
-				out << ";;" << std::endl;
+				out << ";" << std::endl;
 			}
 			else
 				out << "\t\t" << bline.substr(bline.find("virtual") + 8) << std::endl;
@@ -140,31 +140,6 @@ namespace {
 		return (vars);
 	}
 
-	void update_constructor_parameter(std::string& sstring, Vars *vars)
-	{
-		std::string find_string = "/* constructor parameter */";
-		int idx = sstring.find(find_string);
-		if (idx == -1)
-			return ;
-
-		std::string new_param;
-		int count = 0;
-		for (int i = 0; i < Vars::count; i++)
-		{
-			if (count != 0)
-				new_param.append(", ");
-			count += 1;
-			new_param.append(vars[i].type);
-			if (vars[i].type[vars[i].type.size() - 1] != '*')
-				new_param.push_back(' ');
-			new_param.append(vars[i].name);
-		}
-		new_param.append(", ");
-
-		sstring.insert(idx, new_param);
-		return ;
-	}
-
 	void update_constructor_initialize_list(std::string base, std::string& sstring, Vars *vars)
 	{
 		std::string find_string = "/* constructor initialize list */";
@@ -211,15 +186,68 @@ namespace {
 		return ;
 	}
 
+	void get_func_info(std::string& line, std::string& arg, std::string& body)
+	{
+		int sep = line.find(" ");
+		int cidx = line.find("const");
+
+		if (cidx != -1 && cidx < static_cast<int>(line.find("(")))
+			sep += (line.substr(sep + 1).find(" ") + 1);
+		if (line[sep] + 1 != '*')
+		{
+			arg = line.substr(0, sep);
+			body = line.substr(sep + 1);
+		}
+		else
+		{
+			arg = line.substr(0, sep + 2);
+			body = line.substr(sep + 2);
+		}
+		return ;
+	}
+
+	void update_overload_function(std::string base, std::string& bstring, std::string& sstring)
+	{
+		std::istringstream ss(bstring);
+		std::string find_string = "/* inherit overload function */";
+		std::string line, arg, body, new_param;
+		std::ofstream dummy;
+
+		int idx = bstring.find(find_string);
+		std::cout << "idx: " << idx << std::endl;
+		if (idx == -1)
+			return ;
+		get::sstream_with_target(ss, line, "/* inherit overload function */", dummy, false);
+		while (std::getline(ss, line))
+		{
+			if (line.empty() || line[0] == '}')
+				break ;
+			if (line.find("/*") != std::string::npos)
+				break ;
+			line = line.substr(2, line.size() - 3);
+			get_func_info(line, arg, body);
+			std::cout << "[line] " << line << std::endl;
+			new_param.push_back('\n');
+			new_param.append(arg + "\n");
+			new_param.append(base + "::" + body + " {\n");
+			new_param.append("\t/* function body */\n");
+			new_param.append("}\n");
+		}
+		idx = sstring.find("GETTER");
+		if (idx != -1)
+			sstring.insert(idx - 119, new_param);
+		return ;
+	}
+
 	void inherit_source_file(std::string base, std::string bstring, \
-	std::string sstring, std::ofstream& out)
+	std::string hstring, std::string sstring, std::ofstream& out)
 	{
 		Vars *vars = get_vars_from_base_constructor(bstring, base);
 
-		update_constructor_parameter(sstring, vars);
 		update_constructor_initialize_list(base, sstring, vars);
 		update_copy_constructor_initialize_list(base, sstring);
 		update_overload_operator(base, sstring);
+		update_overload_function(base, hstring, sstring);
 
 		out << sstring << std::endl;
 		delete[] vars;
@@ -245,8 +273,9 @@ namespace inherit {
 			std::ofstream hout(get::path(derive, CMD_START, PATH_HEADER), std::ofstream::trunc);
 			std::ofstream sout(get::path(derive, CMD_START, PATH_SOURCE), std::ofstream::trunc);
 			inherit_header_file(base, derive, bstring, dstring, hout);
-			inherit_source_file(base, bstring, sstring, sout);
 			hout.close();
+			std::string hstring = get::string_from_file(derive, CMD_START, PATH_HEADER);
+			inherit_source_file(base, bstring, hstring, sstring, sout);
 			sout.close();
 		}
 	}
