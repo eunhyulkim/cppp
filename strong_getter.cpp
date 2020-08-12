@@ -186,17 +186,15 @@ namespace {
 ** SOURCE UPDATE
 */
 
-	Vars* get_modifier_var(Vars* modifier_vars, Vars& constructor_vars)
+	Vars* get_constructor_var(Vars* constructor_vars, Vars& modifier_vars)
 	{
 		int i = -1;
-		while (++i < Vars::modifier_count)
+		while (++i < Vars::constructor_count)
 		{
-			if (modifier_vars[i].is_static)
-				continue;
-			if (constructor_vars.name.find(modifier_vars[i].name) != std::string::npos)
+			if (constructor_vars[i].name.find(modifier_vars.name) != std::string::npos)
 			{
-				modifier_vars[i].is_initialize = true;
-				return (&modifier_vars[i]);
+				modifier_vars.is_initialize = true;
+				return (&constructor_vars[i]);
 			}
 		}
 		return (nullptr);
@@ -270,7 +268,38 @@ namespace {
 		sstring.replace(idx, find_string.size(), new_param);
 		return ;
 	}
-	
+
+	void update_constructor_initialize_list(std::string& sstring, Vars *modifier_vars, Vars *constructor_vars)
+	{
+		std::string find_string = "/* constructor initialize list */";
+		int idx = sstring.find(find_string);
+		if (idx == -1)
+			return ;
+
+		std::string new_param;
+		int count = 0;
+		for (int i = 0; i < Vars::modifier_count; i++)
+		{
+			if (modifier_vars[i].is_static)
+				continue ;
+			Vars *constructor_var = get_constructor_var(constructor_vars, modifier_vars[i]);
+			if (constructor_var == nullptr)
+				continue ;
+			if (count != 0)
+				new_param.append(", ");
+			count += 1;
+			if (modifier_vars[i].has_prefix)
+				new_param.append("m_");
+			new_param.append(modifier_vars[i].name);
+			new_param.push_back('(');
+			new_param.append(constructor_var->name);
+			new_param.push_back(')');
+		}
+
+		sstring.replace(idx, find_string.size(), new_param);
+		return ;
+	}
+
 	void update_constructor_code(std::string& sstring, Vars *vars)
 	{
 		std::string find_string = "/* constructor code */";
@@ -300,38 +329,6 @@ namespace {
 		return ;
 	}
 
-	void update_constructor_initialize_list(std::string& sstring, Vars *modifier_vars, Vars *constructor_vars)
-	{
-		std::string find_string = "/* constructor initialize list */";
-		int idx = sstring.find(find_string);
-		if (idx == -1)
-			return ;
-
-		std::string new_param;
-		int count = 0;
-		for (int i = 0; i < Vars::constructor_count; i++)
-		{
-			if (count != 0)
-				new_param.append(", ");
-			count += 1;
-			Vars *modifier_var = get_modifier_var(modifier_vars, constructor_vars[i]);
-			if (modifier_var != nullptr)
-			{
-				if (modifier_var->has_prefix)
-					new_param.append("m_");
-				new_param.append(modifier_var->name);
-			}
-			else
-				new_param.append("/* variable_name */");
-			new_param.push_back('(');
-			new_param.append(constructor_vars[i].name);
-			new_param.push_back(')');
-		}
-
-		sstring.replace(idx, find_string.size(), new_param);
-		return ;
-	}
-
 	void update_copy_constructor_initialize_list(std::string& sstring, Vars *modifier_vars, Vars *constructor_vars)
 	{
 		std::string find_string = "/* copy-constructor initialize list */";
@@ -341,24 +338,23 @@ namespace {
 
 		std::string new_param;
 		int count = 0;
-		for (int i = 0; i < Vars::constructor_count; i++)
+		for (int i = 0; i < Vars::modifier_count; i++)
 		{
+			if (modifier_vars[i].is_static)
+				continue ;
+			Vars *constructor_var = get_constructor_var(constructor_vars, modifier_vars[i]);
+			if (constructor_var == nullptr)
+				continue ;
 			if (count != 0)
 				new_param.append(", ");
 			count += 1;
-			Vars *modifier_var = get_modifier_var(modifier_vars, constructor_vars[i]);
-			if (modifier_var != nullptr)
-			{
-				if (modifier_var->has_prefix)
-					new_param.append("m_");
-				new_param.append(modifier_var->name);
-			}
-			else
-				new_param.append("/* variable_name */");
-			new_param.append("(copy.get_");
-			if (modifier_var->has_prefix)
+			if (modifier_vars[i].has_prefix)
 				new_param.append("m_");
-			new_param.append(constructor_vars[i].name);
+			new_param.append(modifier_vars[i].name);
+			new_param.append("(copy.get_");
+			if (modifier_vars[i].has_prefix)
+				new_param.append("m_");
+			new_param.append(modifier_vars[i].name);
 			new_param.append("())");
 		}
 

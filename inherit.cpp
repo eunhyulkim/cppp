@@ -214,7 +214,6 @@ namespace {
 		std::ofstream dummy;
 
 		int idx = bstring.find(find_string);
-		std::cout << "idx: " << idx << std::endl;
 		if (idx == -1)
 			return ;
 		get::sstream_with_target(ss, line, "/* inherit overload function */", dummy, false);
