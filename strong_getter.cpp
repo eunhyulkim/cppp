@@ -487,6 +487,33 @@ namespace {
 		return ;
 	}
 
+	void update_overload_ostream(std::string& sstring, Vars *vars)
+	{
+		std::string find_string = "/* ostream output overload code */";
+		int idx = sstring.find(find_string);
+		if (idx == -1)
+			return ;
+
+		std::string new_param;
+		int count = 0;
+		for (int i = 0; i < Vars::modifier_count; i++)
+		{
+			if (vars[i].is_static)
+				continue;
+			if (count != 0)
+				new_param.append("\n\t");
+			count += 1;
+			new_param.append("out << \"\" << ");
+			if (vars[i].has_prefix)
+				new_param.append("m_");
+			new_param.append(vars[i].name);
+			new_param.push_back(';');
+		}
+		if (count != 0)
+			new_param.append("\n\tout << \"\" << std::endl;");
+		sstring.replace(idx, find_string.size(), new_param);
+	}
+
 	void strong_getter_update_to_source(std::string sstring, std::ofstream& out, \
 	Vars *modifier_vars, Vars *constructor_vars, std::string name)
 	{
@@ -501,6 +528,7 @@ namespace {
 		update_copy_constructor_code(sstring, modifier_vars);
 		update_destructor_code(sstring, modifier_vars);
 		update_overload_operator(sstring, modifier_vars);
+		update_overload_ostream(sstring, modifier_vars);
 		update_getter_function_to_source_file(sstring, modifier_vars, name);
 		out << sstring;
 	}

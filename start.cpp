@@ -152,8 +152,7 @@ namespace {
 		out << "operator<<(std::ostream& out, const ";
 		out << name << "& " << static_cast<char>(tolower(name[0])) << name.substr(1) << ")" << std::endl;
 		out << "{" << std::endl;
-		out << "\tout << " << "/* write to what you print(";
-		out << name << ".member) */" << " << std::endl;" << std::endl;
+		out << "\t/* ostream output overload code */" << std::endl;
 		out << "\treturn (out);" << std::endl;
 		out << "}" << std::endl << std::endl;
 
