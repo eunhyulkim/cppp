@@ -6,17 +6,24 @@ namespace {
 		std::istringstream ss(hstring);
 		std::ofstream dummy;
 		std::string line;
-		if (hstring.find("/* declare member function */") != std::string::npos)
+		
+		if (hstring.find("/* inherit overload function */") != std::string::npos)
+			get::sstream_with_target(ss, line, "/* inherit overload function */", dummy, false);
+		else if (hstring.find("/* declare member function */") != std::string::npos)
 			get::sstream_with_target(ss, line, "/* declare member function */", dummy, false);
 		else
 			return (nullptr);
 		std::string *function_lines = new std::string[20];
 		while (std::getline(ss, line))
 		{
-			if (line.empty() || line.find("/*") != std::string::npos)
-				break;
-			if (line.find("(") == std::string::npos)
+			if (line.empty())
+				continue;
+			if (line[0] != '\t' || line[1] != '\t' || line[2] == '\t')
 				break ;
+			if (line.find("class") != std::string::npos)
+				break ;
+			if (line.find("(") == std::string::npos)
+				continue ;
 			if (line[0] == '}' || line.find("#") != std::string::npos)
 				break ;
 			if (line[line.size() - 1] == '\\')

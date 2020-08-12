@@ -7,7 +7,7 @@ namespace {
 			static int 	constructor_count;
 			bool 		is_static;
 			bool		is_initialize;
-			bool		has_underline;
+			bool		has_prefix;
 			std::string type;
 			std::string name;
 			Vars();
@@ -54,13 +54,13 @@ namespace {
 			vars[Vars::modifier_count].type = line.substr(0, ldx);
 			vars[Vars::modifier_count].name = line.substr(ldx + 1, line.size() - ldx - 2);
 		}
-		if (vars[Vars::modifier_count].name[0] == '_')
+		if (vars[Vars::modifier_count].name.substr(0, 2) == "m_")
 		{
-			vars[Vars::modifier_count].has_underline = true;
-			vars[Vars::modifier_count].name.erase(0, 1);
+			vars[Vars::modifier_count].has_prefix = true;
+			vars[Vars::modifier_count].name.erase(0, 2);
 		}
 		else
-			vars[Vars::modifier_count].has_underline = false;
+			vars[Vars::modifier_count].has_prefix = false;
 		Vars::modifier_count += 1;
 		return ;
 	}
@@ -172,9 +172,10 @@ namespace {
 				out << std::endl;
 				out << "\t\t/* getter function */" << std::endl;
 			}
-			out << "\t\t" << vars[i].type << " get";
-			out << static_cast<char>(toupper(vars[i].name[0]));
-			out << vars[i].name.substr(1);
+			out << "\t\t" << vars[i].type << " get_";
+			if (vars[i].has_prefix == true)
+				out << "m_";			
+			out << vars[i].name;
 			out << "() const;" << std::endl;
 		}
 		get::sstream_with_target(ss, line, "#endif", out, true);
@@ -207,6 +208,10 @@ namespace {
 			return (" = nullptr;");
 		else if (type.find("int") != std::string::npos)
 			return (" = 0;");
+		else if (type.find("float") != std::string::npos)
+			return (" = 0.0;");
+		else if (type.find("double") != std::string::npos)
+			return (" = 0.0;");
 		else if (type.find("bool") != std::string::npos)
 			return (" = false;");
 		else if (type.find("std::string") != std::string::npos)
@@ -285,8 +290,8 @@ namespace {
 				new_param.append("\n\t");
 			count += 1;
 			new_param.append("this->");
-			if (vars[i].has_underline)
-				new_param.push_back('_');
+			if (vars[i].has_prefix)
+				new_param.append("m_");
 			new_param.append(vars[i].name);
 			new_param.append(get_initial_value(vars[i].type));
 		}
@@ -312,8 +317,8 @@ namespace {
 			Vars *modifier_var = get_modifier_var(modifier_vars, constructor_vars[i]);
 			if (modifier_var != nullptr)
 			{
-				if (modifier_var->has_underline)
-					new_param.push_back('_');
+				if (modifier_var->has_prefix)
+					new_param.append("m_");
 				new_param.append(modifier_var->name);
 			}
 			else
@@ -344,15 +349,16 @@ namespace {
 			Vars *modifier_var = get_modifier_var(modifier_vars, constructor_vars[i]);
 			if (modifier_var != nullptr)
 			{
-				if (modifier_var->has_underline)
-					new_param.push_back('_');
+				if (modifier_var->has_prefix)
+					new_param.append("m_");
 				new_param.append(modifier_var->name);
 			}
 			else
 				new_param.append("/* variable_name */");
-			new_param.append("(copy.get");
-			new_param.push_back(static_cast<char>(toupper(constructor_vars[i].name[0])));
-			new_param.append(constructor_vars[i].name.substr(1));
+			new_param.append("(copy.get_");
+			if (modifier_var->has_prefix)
+				new_param.append("m_");
+			new_param.append(constructor_vars[i].name);
 			new_param.append("())");
 		}
 
@@ -379,8 +385,8 @@ namespace {
 				new_param.append("\n\t");
 			count += 1;
 			new_param.append("this->");
-			if (vars[i].has_underline)
-				new_param.push_back('_');
+			if (vars[i].has_prefix)
+				new_param.append("m_");
 			new_param.append(vars[i].name);
 			new_param.append(get_initial_value(vars[i].type));
 		}
@@ -408,8 +414,8 @@ namespace {
 			if (vars[i].type[vars[i].type.size() - 1] == '*')
 				new_param.append("delete ");
 			new_param.append("this->");
-			if (vars[i].has_underline)
-				new_param.push_back('_');
+			if (vars[i].has_prefix)
+				new_param.append("m_");
 			new_param.append(vars[i].name);
 			if (vars[i].type[vars[i].type.size() - 1] == '*')
 				new_param.push_back(';');
@@ -437,12 +443,13 @@ namespace {
 				continue;
 			count += 1;
 			new_param.append("\tthis->");
-			if (modifier_vars[i].has_underline)
-				new_param.push_back('_');
+			if (modifier_vars[i].has_prefix)
+				new_param.append("m_");
 			new_param.append(modifier_vars[i].name);
-			new_param.append(" = obj.get");
-			new_param.push_back(static_cast<char>(toupper(modifier_vars[i].name[0])));
-			new_param.append(modifier_vars[i].name.substr(1));
+			new_param.append(" = obj.get_");
+			if (modifier_vars[i].has_prefix)
+				new_param.append("m_");
+			new_param.append(modifier_vars[i].name);
 			new_param.append("();\n");
 		}
 		if (count == 0)
@@ -467,12 +474,13 @@ namespace {
 				new_param.push_back(' ');
 			new_param.append(name);
 			new_param.append("::");
-			new_param.append("get");
-			new_param.push_back(static_cast<char>(toupper(vars[i].name[0])));
-			new_param.append(vars[i].name.substr(1));
+			new_param.append("get_");
+			if (vars[i].has_prefix)
+				new_param.append("m_");
+			new_param.append(vars[i].name);
 			new_param.append("() const { return (this->");
-			if (vars[i].has_underline)
-				new_param.push_back('_');
+			if (vars[i].has_prefix)
+				new_param.append("m_");
 			new_param.append(vars[i].name);
 			new_param.append("); }");
 			if (i < Vars::modifier_count - 1)

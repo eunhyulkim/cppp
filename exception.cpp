@@ -49,7 +49,7 @@ namespace {
 	{
 		int idx = hstring.find("/* global operator overload */");
 		if (idx == -1)
-			return ;
+			idx = hstring.find("#endif");
 		idx -= 4;
 
 		std::string new_param;

@@ -41,7 +41,7 @@ namespace {
 			if (first_inherit)
 			{
 				out << std::endl;
-				out << "\t\t/* inherit overload code */" << std::endl;
+				out << "\t\t/* inherit overload function */" << std::endl;
 				first_inherit = false;
 			}
 			if (bline.find(" = ") != std::string::npos)
@@ -50,7 +50,7 @@ namespace {
 				int lidx = bline.find(" = ");
 				out << "\t\t";
 				out << bline.substr(idx + 8, lidx - idx - 8);
-				out << ";" << std::endl;
+				out << ";;" << std::endl;
 			}
 			else
 				out << "\t\t" << bline.substr(bline.find("virtual") + 8) << std::endl;

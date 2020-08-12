@@ -1,18 +1,14 @@
-NAME = philosopher
+NAME = c+++
 CC = clang++
 RM = rm -rf
-INCLUDES = -I./includes/
-CFLAGS = -Wall -Wextra -Werror
+INCLUDES = -I.
+CFLAGS = -Wall -Wextra -Werror -std=c++17
 
-MAIN_FILES = inherit start exception error help cmd_main strong_getter function
+MAIN_FILES = inherit start exception error help cmd_main strong_getter function \
 			 cppp get make
-TEST_FILES = Caos main game
 
 SRCS = $(addsuffix .cpp, $(MAIN_FILES))
-SRCS += $(addsuffix .cpp, $(TEST_FILES))
-
 OBJS = $(addsuffix .o, $(MAIN_FILES))
-OBJS += $(addsuffix .o, $(TEST_FILES))
 
 GREEN = \033[0;32m
 RED = \033[0;31m
@@ -24,6 +20,7 @@ ${NAME}: ${OBJS}
 	@echo "$(GREEN)$(NAME) START$(RESET)"
 	@echo "$(RESET)Compiling ${NAME} to root."
 	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} -o ${NAME}
+	@bash setup.sh
 	@echo "$(GREEN)DONE$(RESET)"
 
 ${OBJS}: ${SRCS}
