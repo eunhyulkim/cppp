@@ -11,6 +11,7 @@ namespace {
 	std::string command_function[] = {"-F", "-f", "-function", "-FUNCTION", "-Function"};
 	std::string command_main[] = {"-M", "-m", "-main", "-MAIN", "-Main"};
 	std::string command_make[] = {"-M+", "-m+", "-make", "-MAKE", "-Make"};
+	std::string command_reset[] = {"-R", "-r", "-reset", "-RESET", "-Reset"};
 
 
 	int get_command(std::string command_arg)
@@ -37,6 +38,8 @@ namespace {
 				return (CMD_MAIN);
 			else if (command_arg == command_make[i])
 				return (CMD_MAKE);
+			else if (command_arg == command_reset[i])
+				return (CMD_RESET);
 		}
 		return (error::msg("No supported commands were found."));
 	}
@@ -66,9 +69,11 @@ int		main(int ac, char *av[])
 		else if (cmd == CMD_FUNCTION)
 			function::main(ac, av);
 		else if (cmd == CMD_MAIN)
-			cmd_main::main(av[2]);
+			cmd_main::main(ac, av);
 		else if (cmd == CMD_MAKE)
 			make::main(ac, av);
+		else if (cmd == CMD_RESET)
+			reset::main(ac, av);
 		else
 			return (error::msg("It is a supported command, but the implementation is not yet complete."));
 	} catch (char const *msg) {

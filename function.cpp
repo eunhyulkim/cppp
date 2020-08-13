@@ -96,6 +96,7 @@ namespace {
 namespace function {
 	void	main(int ac, char *av[])
 	{
+		reset::backup(ac, av, CMD_FUNCTION);
 		for (int i = 2; i < ac; i++)
 		{
 			std::string name = av[i];

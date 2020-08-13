@@ -6,6 +6,7 @@
 # include <sstream>
 # include <cstdlib>
 # include <string>
+# include <ctime>
 # include <iomanip>
 
 # define CMD_HELP			1
@@ -17,6 +18,7 @@
 # define CMD_STRONG_GETTER	7
 # define CMD_MAIN			8
 # define CMD_MAKE			9
+# define CMD_RESET			10
 
 # define TYPE_INTERFACE		1
 # define TYPE_ABSTRACT		2
@@ -25,6 +27,12 @@
 
 # define PATH_HEADER		1
 # define PATH_SOURCE		2
+
+# define MAX_BACKUP_FOLDER	5
+# define BACKUP_HEADER		1
+# define BACKUP_SOURCE		2
+# define BACKUP_ALL			3
+# define BACKUP_MAKEFILE	4
 
 namespace start {
 	void main(int ac, char *av[], int cmd);
@@ -49,11 +57,18 @@ namespace function {
 namespace cmd_main {
 	void create_main_file(std::ofstream& out, std::string file_name);
 	void create_header_file(std::ofstream& out);
-	void main(char *file_name);
+	void main(int ac, char *av[]);
 }
 
 namespace make {
 	void main(int ac, char *av[]);
+}
+
+namespace reset {
+	int backup(int ac, char *av[], int cmd);
+	void main(int ac, char *av[]);
+	void cherrypick(std::string commit_path);
+	void hard(std::string commit_path);
 }
 
 namespace help {

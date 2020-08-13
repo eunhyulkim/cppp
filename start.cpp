@@ -187,6 +187,7 @@ namespace {
 			create_function_source_file(out, name);
 		else
 			create_class_source_file(out, name, cmd);
+		out.close();
 	}
 }
 

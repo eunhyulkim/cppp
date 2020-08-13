@@ -160,8 +160,11 @@ namespace cmd_main {
 		print_namespaces(out);
 	}
 
-	void	main(char *file_name)
+	void	main(int ac, char *av[])
 	{
+		reset::backup(ac, av, CMD_MAIN);
+		std::string file_name = av[2];
+
 		std::string path = get::path(file_name, CMD_START, PATH_SOURCE);
 		std::ofstream sout(path, std::ofstream::trunc);
 		cmd_main::create_main_file(sout, file_name);

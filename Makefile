@@ -5,7 +5,7 @@ INCLUDES = -I.
 CFLAGS = -Wall -Wextra -Werror -std=c++17
 
 MAIN_FILES = inherit start exception error help cmd_main strong_getter function \
-			 cppp get make
+			 cppp get reset make
 
 SRCS = $(addsuffix .cpp, $(MAIN_FILES))
 OBJS = $(addsuffix .o, $(MAIN_FILES))

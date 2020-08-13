@@ -217,7 +217,7 @@ namespace make {
 	{
 		if (ac < 4)
 			throw ("The make command requires program_name and root directory");
-
+		reset::backup(ac, av, CMD_MAKE);
 		std::string path = get_makefile_path();
 		std::ofstream out(path, std::ofstream::trunc);
 		if (!out.is_open())

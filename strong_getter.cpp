@@ -537,6 +537,7 @@ namespace {
 namespace strong_getter {
 	void	main(int ac, char *av[])
 	{
+		reset::backup(ac, av, CMD_STRONG_GETTER);
 		for (int i = 2; i < ac; i++)
 		{
 			std::string name = av[i];

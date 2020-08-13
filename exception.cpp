@@ -104,6 +104,7 @@ namespace {
 namespace exception {
 	void	main(int ac, char *av[])
 	{
+		reset::backup(ac, av, CMD_EXCEPTION);
 		for (int i = 2; i < ac; i++)
 		{
 			std::string name = av[i];

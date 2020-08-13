@@ -225,7 +225,6 @@ namespace {
 				break ;
 			line = line.substr(2, line.size() - 3);
 			get_func_info(line, arg, body);
-			std::cout << "[line] " << line << std::endl;
 			new_param.push_back('\n');
 			new_param.append(arg + "\n");
 			new_param.append(base + "::" + body + " {\n");
@@ -258,6 +257,7 @@ namespace inherit {
 	{
 		if (ac < 4)
 			throw ("The inherit command requires base and derived class separately.");
+		reset::backup(ac, av, CMD_INHERIT);
 		std::string base = std::string(av[2]);
 		std::string bstring = get::string_from_file(base, CMD_START, PATH_HEADER);
 		for (int i = 3; i < ac; i++)
