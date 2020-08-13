@@ -41,7 +41,7 @@ namespace {
 		int last_idx = filename.size() - 4;
 		if (char_count + last_idx >= 80)
 		{
-			out << std::endl;
+			out << " \\" << std::endl;
 			for (int i = 0; i < ((main_count + 1) / 4); i++)
 				out << "\t";
 			for (int i = 0; i < ((main_count + 1) % 4); i++)
@@ -103,6 +103,8 @@ namespace {
 			if (fs::is_directory(p.path()))
 			{
 				std::string dir_name = get::file_name(p.path());
+				if (dir_name[0] == '.')
+					continue ;
 				main_count = 8 + dir_name.size();
 				for (int i = 0; i < (int)dir_name.size(); i++)
 					out << static_cast<char>(toupper(dir_name[i]));
@@ -128,10 +130,13 @@ namespace {
 		{
 			if (fs::is_directory(p.path()))
 			{
+				std::string dir_name = get::file_name(p.path());
+				if (dir_name[0] == '.')
+					continue ;
+
 				if (root == ".")
 				{
 					out << "SRCS += $(addsuffix .cpp, $(";
-					std::string dir_name = get::file_name(p.path());
 					for (int i = 0; i < (int)dir_name.size(); i++)
 						out << static_cast<char>(toupper(dir_name[i]));
 					out << "_FILES";
@@ -141,7 +146,6 @@ namespace {
 				{
 					out << "SRCS += $(addprefix " << root
 					<< ", $(addsuffix .cpp, $(";
-					std::string dir_name = get::file_name(p.path());
 					for (int i = 0; i < (int)dir_name.size(); i++)
 						out << static_cast<char>(toupper(dir_name[i]));
 					out << "_FILES";
@@ -160,8 +164,10 @@ namespace {
 		{
 			if (fs::is_directory(p.path()))
 			{
-				out << "OBJS += $(addsuffix .o, $(";
 				std::string dir_name = get::file_name(p.path());
+				if (dir_name[0] == '.')
+					continue ;
+				out << "OBJS += $(addsuffix .o, $(";
 				for (int i = 0; i < (int)dir_name.size(); i++)
 					out << static_cast<char>(toupper(dir_name[i]));
 				out << "_FILES))" << std::endl;

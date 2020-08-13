@@ -28,7 +28,7 @@
 # define PATH_HEADER		1
 # define PATH_SOURCE		2
 
-# define MAX_BACKUP_FOLDER	5
+# define MAX_BACKUP_FOLDER	10
 # define BACKUP_HEADER		1
 # define BACKUP_SOURCE		2
 # define BACKUP_ALL			3
