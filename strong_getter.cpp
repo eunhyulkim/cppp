@@ -487,7 +487,7 @@ namespace {
 		return ;
 	}
 
-	void update_overload_ostream(std::string& sstring, Vars *vars)
+	void update_overload_ostream(std::string& sstring, Vars *vars, std::string name)
 	{
 		std::string find_string = "/* ostream output overload code */";
 		int idx = sstring.find(find_string);
@@ -504,10 +504,13 @@ namespace {
 				new_param.append("\n\t");
 			count += 1;
 			new_param.append("out << \"\" << ");
+			new_param.push_back(static_cast<char>(tolower(name[0])));
+			new_param.append(name.substr(1) + ".");
+			new_param.append("get_");
 			if (vars[i].has_prefix)
 				new_param.append("m_");
 			new_param.append(vars[i].name);
-			new_param.push_back(';');
+			new_param.append("();");
 		}
 		if (count != 0)
 			new_param.append("\n\tout << \"\" << std::endl;");
@@ -528,7 +531,7 @@ namespace {
 		update_copy_constructor_code(sstring, modifier_vars);
 		update_destructor_code(sstring, modifier_vars);
 		update_overload_operator(sstring, modifier_vars);
-		update_overload_ostream(sstring, modifier_vars);
+		update_overload_ostream(sstring, modifier_vars, name);
 		update_getter_function_to_source_file(sstring, modifier_vars, name);
 		out << sstring;
 	}
