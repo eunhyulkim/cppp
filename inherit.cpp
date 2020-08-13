@@ -49,11 +49,11 @@ namespace {
 				int idx = bline.find("virtual");
 				int lidx = bline.find(" = ");
 				out << "\t\t";
-				out << bline.substr(idx + 8, lidx - idx - 8);
+				out << bline.substr(idx, lidx - idx);
 				out << ";" << std::endl;
 			}
 			else
-				out << "\t\t" << bline.substr(bline.find("virtual") + 8) << std::endl;
+				out << "\t\t" << bline.substr(bline.find("virtual")) << std::endl;
 		}
 	}
 
