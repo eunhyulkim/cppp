@@ -1,4 +1,4 @@
-# C+++ <img src="/img/cppp_button.png" width="125">
+# C+++ <img src="https://badgen.net/badge/c+++/1.2.1/CF566F" width="125" height="24">
 <img src="/img/cppp_logo.png" align="right"
      alt="Size Limit logo by eunhkim" width="120" height="178">
 
