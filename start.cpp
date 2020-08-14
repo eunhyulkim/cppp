@@ -163,6 +163,13 @@ namespace {
 		out << "/* " << std::string(74, '*') << " */" << std::endl << std::endl;
 		out << "/* getter code */" << std::endl << std::endl;
 
+		// setter header
+		out << "/* " << std::string(74, '*') << " */" << std::endl;
+		out << "/* " << std::string(33, '-') << " SETTER ";
+		out << std::string(33, '-') << " */" << std::endl;
+		out << "/* " << std::string(74, '*') << " */" << std::endl << std::endl;
+		out << "/* setter code */" << std::endl << std::endl;
+
 		// exception header
 		out << "/* " << std::string(74, '*') << " */" << std::endl;
 		out << "/* " << std::string(31, '-') << " EXCEPTION ";

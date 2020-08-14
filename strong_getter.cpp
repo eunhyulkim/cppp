@@ -157,7 +157,7 @@ namespace {
 		return (vars);
 	}
 
-	void strong_getter_update_to_header(std::string hstring, std::ofstream& out, \
+	void strong_getter_and_setter_update_to_header(std::string hstring, std::ofstream& out, \
 	Vars *vars)
 	{
 		std::istringstream ss(hstring);
@@ -172,11 +172,33 @@ namespace {
 				out << std::endl;
 				out << "\t\t/* getter function */" << std::endl;
 			}
-			out << "\t\t" << vars[i].type << " get_";
+			out << "\t\t" << vars[i].type;
+			if (vars[i].type[vars[i].type.size() - 1] != '*')
+				out << " ";
+			out << "get_";
 			if (vars[i].has_prefix == true)
 				out << "m_";			
 			out << vars[i].name;
 			out << "() const;" << std::endl;
+		}
+		for (int i = 0; i < Vars::modifier_count; i++)
+		{
+			if (i == 0)
+			{
+				out << std::endl;
+				out << "\t\t/* setter function */" << std::endl;
+			}
+			out << "\t\tvoid ";
+			out << "set_";
+			if (vars[i].has_prefix == true)
+				out << "m_";			
+			out << vars[i].name;
+			out << "(";
+			out << vars[i].type;
+			if (vars[i].type[vars[i].type.size() - 1] != '*')
+				out << " ";
+			out << vars[i].name;
+			out << ");" << std::endl;
 		}
 		get::sstream_with_target(ss, line, "#endif", out, true);
 		out << line << std::endl;
@@ -517,6 +539,44 @@ namespace {
 		return ;
 	}
 
+	void update_setter_function_to_source_file(std::string& sstring, \
+	Vars *vars, std::string name)
+	{
+		std::string find_string = "/* setter code */";
+		int idx = sstring.find(find_string);
+		if (idx == -1)
+			return ;
+
+		std::string new_param;
+		for (int i = 0; i < Vars::modifier_count; i++)
+		{
+			new_param.append("void ");
+			new_param.append(name);
+			new_param.append("::");
+			new_param.append("set_");
+			if (vars[i].has_prefix)
+				new_param.append("m_");
+			new_param.append(vars[i].name);
+			new_param.append("(");
+			new_param.append(vars[i].type);
+			if (vars[i].type[vars[i].type.size() - 1] != '*')
+				new_param.append(" ");
+			new_param.append(vars[i].name);
+			new_param.append(" { this->");
+			if (vars[i].has_prefix)
+				new_param.append("m_");
+			new_param.append(vars[i].name);
+			new_param.append(" = ");
+			new_param.append(vars[i].name);
+			new_param.append("; }");
+			if (i < Vars::modifier_count - 1)
+				new_param.push_back('\n');
+		}
+
+		sstring.replace(idx, find_string.size(), new_param);
+		return ;
+	}
+
 	void update_overload_ostream(std::string& sstring, Vars *vars, std::string name)
 	{
 		std::string find_string = "/* ostream output overload code */";
@@ -563,6 +623,7 @@ namespace {
 		update_overload_operator(sstring, modifier_vars);
 		update_overload_ostream(sstring, modifier_vars, name);
 		update_getter_function_to_source_file(sstring, modifier_vars, name);
+		update_setter_function_to_source_file(sstring, modifier_vars, name);
 		out << sstring;
 	}
 }
@@ -581,7 +642,7 @@ namespace strong_getter {
 			std::ofstream hout(get::path(name, CMD_START, PATH_HEADER), std::ofstream::trunc);
 			std::ofstream sout(get::path(name, CMD_START, PATH_SOURCE), std::ofstream::trunc);
 			Vars *modifier_vars = get_vars_from_accessModifier(hstring);
-			strong_getter_update_to_header(hstring, hout, modifier_vars);
+			strong_getter_and_setter_update_to_header(hstring, hout, modifier_vars);
 			Vars *constructor_vars = get_vars_from_constructor(hstring, name);
 			strong_getter_update_to_source(sstring, sout, modifier_vars, constructor_vars, name);
 			delete[] modifier_vars;
