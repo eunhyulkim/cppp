@@ -206,7 +206,7 @@ namespace {
 		return ;
 	}
 
-	void update_overload_function(std::string base, std::string& bstring, std::string& sstring)
+	void update_overload_function(std::string derive, std::string& bstring, std::string& sstring)
 	{
 		std::istringstream ss(bstring);
 		std::string find_string = "/* inherit overload function */";
@@ -223,11 +223,11 @@ namespace {
 				break ;
 			if (line.find("/*") != std::string::npos)
 				break ;
-			line = line.substr(10, line.size() - 10);
+			line = line.substr(10, line.size() - 11);
 			get_func_info(line, arg, body);
 			new_param.push_back('\n');
 			new_param.append(arg + "\n");
-			new_param.append(base + "::" + body + " {\n");
+			new_param.append(derive + "::" + body + " {\n");
 			new_param.append("\t/* function body */\n");
 			new_param.append("}\n");
 		}
@@ -237,7 +237,7 @@ namespace {
 		return ;
 	}
 
-	void inherit_source_file(std::string base, std::string bstring, \
+	void inherit_source_file(std::string base, std::string derive, std::string bstring, \
 	std::string hstring, std::string sstring, std::ofstream& out)
 	{
 		Vars *vars = get_vars_from_base_constructor(bstring, base);
@@ -245,7 +245,7 @@ namespace {
 		update_constructor_initialize_list(base, sstring, vars);
 		update_copy_constructor_initialize_list(base, sstring);
 		update_overload_operator(base, sstring);
-		update_overload_function(base, hstring, sstring);
+		update_overload_function(derive, hstring, sstring);
 
 		out << sstring << std::endl;
 		delete[] vars;
@@ -274,7 +274,7 @@ namespace inherit {
 			inherit_header_file(base, derive, bstring, dstring, hout);
 			hout.close();
 			std::string hstring = get::string_from_file(derive, CMD_START, PATH_HEADER);
-			inherit_source_file(base, bstring, hstring, sstring, sout);
+			inherit_source_file(base, derive, bstring, hstring, sstring, sout);
 			sout.close();
 		}
 	}
