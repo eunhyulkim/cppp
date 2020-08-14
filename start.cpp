@@ -95,7 +95,7 @@ namespace {
 		// static variable header
 		out << "/* " << std::string(74, '*') << " */" << std::endl;
 		out << "/* " << std::string(28, '-') << " STATIC VARIABLE ";
-		out << std::string(28, '-') << " */" << std::endl;
+		out << std::string(29, '-') << " */" << std::endl;
 		out << "/* " << std::string(74, '*') << " */" << std::endl << std::endl;
 		out << "/* static variable code */" << std::endl << std::endl;
 

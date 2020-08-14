@@ -562,7 +562,7 @@ namespace {
 			if (vars[i].type[vars[i].type.size() - 1] != '*')
 				new_param.append(" ");
 			new_param.append(vars[i].name);
-			new_param.append(" { this->");
+			new_param.append(") { this->");
 			if (vars[i].has_prefix)
 				new_param.append("m_");
 			new_param.append(vars[i].name);

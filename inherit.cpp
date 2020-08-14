@@ -223,7 +223,7 @@ namespace {
 				break ;
 			if (line.find("/*") != std::string::npos)
 				break ;
-			line = line.substr(9, line.size() - 10);
+			line = line.substr(10, line.size() - 10);
 			get_func_info(line, arg, body);
 			new_param.push_back('\n');
 			new_param.append(arg + "\n");
