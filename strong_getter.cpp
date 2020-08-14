@@ -138,7 +138,7 @@ namespace {
 			throw ("Failed to find constructor variables in public areas.");
 		}
 		bword = base + "()";
-		nword = "const &" + base;
+		nword = "const " + base + "&";
 		while (std::getline(ss, line))
 		{
 			if (line.empty())
@@ -220,6 +220,9 @@ namespace {
 
 	void update_static_variable(std::string& sstring, Vars *vars, std::string name)
 	{
+		if (Vars::modifier_count == 0)
+			return ;
+
 		std::string find_string = "/* static variable code */\n";
 		int idx = sstring.find(find_string);
 		if (idx == -1)
@@ -250,6 +253,12 @@ namespace {
 		if (idx == -1)
 			return ;
 
+		if (Vars::constructor_count == 0)
+		{
+			sstring.replace(idx, find_string.size(), std::string(""));
+			return ;
+		}
+
 		std::string new_param;
 		int count = 0;
 		for (int i = 0; i < Vars::constructor_count; i++)
@@ -275,6 +284,12 @@ namespace {
 		int idx = sstring.find(find_string);
 		if (idx == -1)
 			return ;
+
+		if (Vars::modifier_count == 0)
+		{
+			sstring.replace(idx, find_string.size(), std::string(""));
+			return ;
+		}
 
 		std::string new_param;
 		int count = 0;
@@ -302,6 +317,9 @@ namespace {
 
 	void update_constructor_code(std::string& sstring, Vars *vars)
 	{
+		if (Vars::modifier_count == 0)
+			return ;
+
 		std::string find_string = "/* constructor code */";
 		int idx = sstring.find(find_string);
 		if (idx == -1)
@@ -335,6 +353,12 @@ namespace {
 		int idx = sstring.find(find_string);
 		if (idx == -1)
 			return ;
+		
+		if (Vars::modifier_count == 0)
+		{
+			sstring.replace(idx, find_string.size(), std::string(""));
+			return ;
+		}
 
 		std::string new_param;
 		int count = 0;
@@ -364,6 +388,9 @@ namespace {
 	
 	void update_copy_constructor_code(std::string& sstring, Vars *vars)
 	{
+		if (Vars::modifier_count == 0)
+			return ;
+
 		std::string find_string = "/* copy-constructor code */";
 		int idx = sstring.find(find_string);
 		if (idx == -1)
@@ -393,6 +420,9 @@ namespace {
 
 	void update_destructor_code(std::string& sstring, Vars *vars)
 	{
+		if (Vars::modifier_count == 0)
+			return ;
+
 		std::string find_string = "/* destructor code */";
 		int idx = sstring.find(find_string);
 		if (idx == -1)
@@ -551,8 +581,7 @@ namespace strong_getter {
 			std::ofstream hout(get::path(name, CMD_START, PATH_HEADER), std::ofstream::trunc);
 			std::ofstream sout(get::path(name, CMD_START, PATH_SOURCE), std::ofstream::trunc);
 			Vars *modifier_vars = get_vars_from_accessModifier(hstring);
-			if (Vars::modifier_count != 0)
-				strong_getter_update_to_header(hstring, hout, modifier_vars);
+			strong_getter_update_to_header(hstring, hout, modifier_vars);
 			Vars *constructor_vars = get_vars_from_constructor(hstring, name);
 			strong_getter_update_to_source(sstring, sout, modifier_vars, constructor_vars, name);
 			delete[] modifier_vars;
