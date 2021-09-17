@@ -2,17 +2,17 @@
 <img src="/img/cppp_logo.png" align="right"
      alt="Size Limit logo by eunhkim" width="120" height="178">
 
-**c+++** is a powerful tool to help your **c++ project**. 
-It was developed based on the clang++ compiler of mac os(10.15.6), 
-and compiled with -std=c++17. Currently, it supports the following seven key features.
+**c+++** 은 c++ 코드 작성을 돕는 터미널 플러그인입니다.
+mac os(10.15.6)에서 clang++ 컴파일러로 -std=c++17 플래그를 베이스로 개발하였으며,
+크게 일곱 개의 기능을 가지고 있습니다.
 
-* Create a c++ file with **canonical templates**.
-* Set **inheritance** relationship.
-* Set the **getter** functions.
-* Update the **member functions** of the header file to the source file.
-* Declare an **exception** into an inner class of object class.
-* Create **main** header and source file.
-* Create **Makefile**.
+* **캐노니컬 형식**을 따르는 템플릿이 적용된 cpp/hpp 파일을 생성합니다.
+* **상속** 진행시 관계가 설정된 자식 클래스 파일을 생성합니다.
+* **getter** 함수를 생성합니다.
+* 헤더 파일에 생성한 **멤버 함수**를 소스 파일에 업데이트합니다.
+* **exception** 생성시 필요한 보일러 플레이트 코드들을 생성합니다.
+* 소스 코드를 분석하여 메인 헤더 파일과 소스 파일을 생성합니다.
+* **메이크 파일**을 생성합니다.
 
 <p align="center">
   <img src="./img/terminal.png" alt="Size Limit CLI" width="738">
@@ -22,18 +22,18 @@ and compiled with -std=c++17. Currently, it supports the following seven key fea
 # Efficiency
 |                            | 👌 Support  |
 | -------------------------- | :----------------: |
-| Create file (.cpp, .hpp)   |         ✔️         |
-| class template (.cpp)      |         ✔️         |
-| Canonical form (.cpp, .hpp)|         ✔️         |
-| Include base class         |         ✔️         |
-| Set inheritance relationship |         ✔️         |
-| Virtual function overload  |         ✔️         |
-| Getter function (.cpp, .hpp)  |         ✔️         |
-| Exception canonical form   |         ✔️         |
-| Create Main template       |         ✔️         |
-| Create Makefile            |         ✔️         |
+| 파일 생성 (.cpp, .hpp)        |         ✔️         |
+| 클래스 템플릿 (.cpp)          |         ✔️         |
+| 캐노니컬 폼 (.cpp, .hpp)      |         ✔️         |
+| 베이스 클래스 포함             |         ✔️         |
+| 상속 관계 설정                |         ✔️         |
+| 가상 함수 오버로드             |         ✔️         |
+| Getter 함수 (.cpp, .hpp)    |         ✔️         |
+| Exception 캐노니컬 폼        |         ✔️         |
+| 메인 헤더/소스파일 생성         |         ✔️         |
+| 메이크 파일 생성              |         ✔️         |
 
-With just a few typing, it will save a lot of your time!
+다양한 기능을 통해 적은 타이핑으로 많은 시간을 아낄 수 있습니다.
 
 # Usage
 <p align="center">
@@ -46,31 +46,10 @@ With just a few typing, it will save a lot of your time!
     echo "alias c+++='~/.c+++';' >> ~/.zshrc;
     source ~/.zshrc;
     c+++ -help;
-If you are a Mac OS user, it would be convenient to **use the compiled program file** right away.
-  
-# IMPLEMENTATION NOTES
-C is procedural-oriented and simple. But C++ is object-oriented and a little
-more complex. What does this difference mean? In C, if you have simply written
-a story in your head, in C++, you must first create the world and its characters in
-which the story will be made. Just as you don't exist, the narrative is carried out by
-the interaction between the character and the world. Yeah. That's what the object
-means. Hiding you as a developer in the interaction of sophisticated objects.
 
-You have to be responsible for many things, including the state, function, creation,
-copy, and destruction of objects, but once you've designed the objects well, a lot
-will be easier. The problem is that the design of the object is extremely troublesome,
-complex and cumbersome. omg... Fortunately, if you understand the grammar of C++
-and deal with this tool, it will give you wings on your back without taking away
-the strength of your legs.
+Mac OS 유저라면 컴파일된 프로그램 파일을 바로 적용할 수 있습니다.
 
 # WARNING
-Object design is first. Do programming at the end. When all objects are designed, 
-turn on C+++ and execute the commands in the order of start, inherit, getter, exit, 
-function, main, and make.Otherwise, you will encounter unexpected results.
-
-If possible, do a backup before using this tool. Otherwise, run it with the code file open. 
-If used correctly, there will be no problems, but mistakes can lead to accidents that are difficult to reverse.
-
-
-# BUG OR IDEA
-If you're a 42 cadet or vocal in BonetoBeCode Slack, give dm to **eunhkim**. If not, please email me at valhalla.host@gmail.com.
+start, inherit, getter, exit, function, main, 그리고 make의 흐름으로 명령을 사용하는 것이 좋습니다.
+적절한 흐름에 따라 사용하지 않으면 예기치 않은 문제에 맞닥뜨릴 수 있습니다.
+그러나 문제가 있더라도 자체적인 복구 기능이 내장되어 있어 사용할 수 있습니다.
